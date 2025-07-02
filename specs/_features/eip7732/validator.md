@@ -55,7 +55,7 @@ def get_ptc_assignment(
 
 ### Lookahead
 
-*[New in EIP7732]*
+[New in EIP-7732]
 
 `get_ptc_assignment` should be called at the start of each epoch to get the
 assignment for the next epoch (`current_epoch + 1`). A validator should plan for
@@ -74,20 +74,8 @@ All validator responsibilities remain unchanged other than the following:
 
 ### Attestation
 
-The attestation deadline is implicitly changed by the change in
-`INTERVALS_PER_SLOT`. Moreover, the `attestation.data.index` field is now used
-to signal the payload status of the block being attested to
-(`attestation.data.beacon_block_root`). With the alias
-`data = attestation.data`, the validator should set this field as follows:
-
-- If `block.slot == current_slot` (i.e., `data.slot`), then always set
-  `data.index = 0`.
-- Otherwise, set `data.index` based on the payload status in the validator's
-  fork-choice:
-  - Set `data.index = 0` to signal that the payload is not present in the
-    canonical chain (payload status is `EMPTY` in the fork-choice).
-  - Set `data.index = 1` to signal that the payload is present in the canonical
-    chain (payload status is `FULL` in the fork-choice).
+Attestation duties are not changed for validators, however the attestation
+deadline is implicitly changed by the change in `INTERVALS_PER_SLOT`.
 
 ### Sync Committee participations
 
@@ -216,9 +204,8 @@ def prepare_execution_payload(
     # Verify consistency of the parent hash with respect to the previous execution payload header
     parent_hash = state.latest_execution_payload_header.block_hash
 
-    # [Modified in EIP7732]
     # Set the forkchoice head and initiate the payload build process
-    withdrawals, _, _ = get_expected_withdrawals(state)
+    withdrawals, _, _ = get_expected_withdrawals(state)  # [Modified in EIP-7732]
 
     payload_attributes = PayloadAttributes(
         timestamp=compute_time_at_slot(state, state.slot),
