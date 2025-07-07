@@ -43,11 +43,11 @@ specifications of previous upgrades, and assumes them as pre-requisite.
 
 ### Preset
 
-*[Modified in EIP7732]*
+*[Modified in EIP-7732]*
 
 | Name                                           | Value        | Description                                                 |
 | ---------------------------------------------- | ------------ | ----------------------------------------------------------- |
-| `KZG_COMMITMENT_INCLUSION_PROOF_DEPTH_EIP7732` | `22` **TBD** | Merkle proof depth for the `blob_kzg_commitments` list item |
+| `KZG_COMMITMENT_INCLUSION_PROOF_DEPTH_EIP7732` | `21` **TBD** | Merkle proof depth for the `blob_kzg_commitments` list item |
 
 ### Configuration
 
@@ -115,18 +115,18 @@ Topics follow the same specification as in prior upgrades.
 
 The `beacon_block` topic is updated to support the modified type
 
-| Name           | Message Type        |
-| -------------- | ------------------- |
-| `beacon_block` | `SignedBeaconBlock` |
+| Name           | Message Type                               |
+| -------------- | ------------------------------------------ |
+| `beacon_block` | `SignedBeaconBlock` [modified in EIP-7732] |
 
 The new topics along with the type of the `data` field of a gossipsub message
 are given in this table:
 
-| Name                          | Message Type                     |
-| ----------------------------- | -------------------------------- |
-| `execution_payload_header`    | `SignedExecutionPayloadHeader`   |
-| `execution_payload`           | `SignedExecutionPayloadEnvelope` |
-| `payload_attestation_message` | `PayloadAttestationMessage`      |
+| Name                          | Message Type                                       |
+| ----------------------------- | -------------------------------------------------- |
+| `execution_payload_header`    | `SignedExecutionPayloadHeader` [New in EIP-7732]   |
+| `execution_payload`           | `SignedExecutionPayloadEnvelope` [New in EIP-7732] |
+| `payload_attestation_message` | `PayloadAttestationMessage` [New in EIP-7732]      |
 
 ##### Global topics
 
@@ -140,16 +140,16 @@ Let `block` be the beacon block corresponding to
 
 The following validations are added:
 
-- _[REJECT]_ `aggregate.data.index < 2`.
-- _[REJECT]_ `aggregate.data.index == 0` if `block.slot == aggregate.data.slot`.
+- _[REJECT]_ `aggregate.data.index < 2`
+- _[REJECT]_ `aggregate.data.index == 0` if `block.slot == aggregate.data.slot`
 
 The following validations are removed:
 
-- _[REJECT]_ `aggregate.data.index == 0`.
+- _[REJECT]_ `aggregate.data.index == 0`
 
 ###### `beacon_block`
 
-*[Modified in EIP7732]*
+[Modified in EIP-7732]
 
 The *type* of the payload of this topic changes to the (modified)
 `SignedBeaconBlock` found in [the Beacon Chain changes](./beacon-chain.md).
@@ -208,7 +208,8 @@ obtained from the `state.signed_execution_payload_header`)
 - _[REJECT]_ `block` passes validation.
 - _[REJECT]_ `block.slot` equals `envelope.slot`.
 - _[REJECT]_ `envelope.builder_index == header.builder_index`
-- _[REJECT]_ `payload.block_hash == header.block_hash`
+- if `envelope.payload_withheld == False` then
+  - _[REJECT]_ `payload.block_hash == header.block_hash`
 - _[REJECT]_ The builder signature,
   `signed_execution_payload_envelope.signature`, is valid with respect to the
   builder's public key.
@@ -273,13 +274,13 @@ Let `block` be the beacon block corresponding to
 
 The following validations are added:
 
-- _[REJECT]_ `attestation.data.index < 2`.
+- _[REJECT]_ `attestation.data.index < 2`
 - _[REJECT]_ `attestation.data.index == 0` if
-  `block.slot == attestation.data.slot`.
+  `block.slot == attestation.data.slot`
 
 The following validations are removed:
 
-- _[REJECT]_ `attestation.data.index == 0`.
+- _[REJECT]_ `attestation.data.index == 0`
 
 ### The Req/Resp domain
 
@@ -333,7 +334,7 @@ Per `context = compute_fork_digest(fork_version, genesis_validators_root)`:
 **Protocol ID:**
 `/eth2/beacon_chain/req/execution_payload_envelopes_by_range/1/`
 
-*[New in EIP7732]*
+*[New in EIP-7732]*
 
 Request Content:
 
