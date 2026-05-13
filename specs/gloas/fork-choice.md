@@ -395,11 +395,12 @@ similar to `should_extend_payload` but takes into consideration the PTC view on
 data availability.
 
 ```python
-def should_build_on_full(store: Store, root: Root) -> bool:
-    if not should_extend_payload(store, root):
+def should_build_on_full(store: Store, head: ForkChoiceNode) -> bool:
+    assert head.payload_status != PAYLOAD_STATUS_PENDING
+    if head.payload_status == PAYLOAD_STATUS_EMPTY:
         return False
 
-    return not ptc_voted_data_unavailable(store, root)
+    return not ptc_voted_data_unavailable(store, head.root)
 ```
 
 ### New `should_extend_payload`
